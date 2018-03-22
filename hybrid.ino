@@ -1,5 +1,5 @@
-//Almost-Final code Hybrid bot
-#include <PS2X_lib.h>
+//Final code Hybrid bot
+#include<PS2X_lib.h>
 #include<NewPing.h>
 #include<Servo.h>
 #define maxping 400
@@ -51,8 +51,8 @@ int locoleftVal=100, locorightVal=100, gripmotorVal=255, climbmotorVal=255;
 int mode=0;
 
 
-void setup() {
-
+void setup()
+{
   Serial.begin(9600);
 
   ps.config_gamepad(psclock,pscommand,psatt,psdata);
@@ -99,7 +99,8 @@ void setup() {
   ArmServo[2].attach(AGRS);
   ArmServo[3].attach(AGGS);
 
-  for(int i=0;i<3;i++){
+  for(int i=0;i<3;i++)
+  {
     ArmServo[i].write(90);
   }
   ArmServo[3].write(armGrippingAngle);
@@ -108,8 +109,8 @@ void setup() {
 
 }
 
-void loop() {
-
+void loop()
+{
   ps.read_gamepad();
 
   /*-------------------------------------Breaks for all motors------------------------------------------*/
@@ -121,225 +122,230 @@ void loop() {
   digitalWrite(clampingBreak,HIGH);
   digitalWrite(AMBreak,HIGH);
 
-  for(int i=0;i<4;i++){
+  for(int i=0;i<4;i++)
+  {
     ArmServo[i].detach();
   }
 
   if(mode==0)
   {
-
-       if(ps.Button(PSB_R1))                                      //Increase bldc speed by 10.
-       {
-             Serial.println("R1 PRESSED");
-             bldcSpeed+=5;
-             bldc.writeMicroseconds(bldcSpeed);
-             Serial.println(bldcSpeed);
-             delay(10);
-       }
-       else if(ps.Button(PSB_R2))                                 //Decrease bldc speed by 10.
-       {
-             Serial.println("R2 PRESSED");
-             bldcSpeed-=5;
-             bldc.writeMicroseconds(bldcSpeed);
-             Serial.println(bldcSpeed);
-             delay(10);
-        
-       }
-       if(ps.Button(PSB_L1))                                      //Gimble up.
-       {
-             Serial.println("L1 pressed Gimble up");
-             digitalWrite(GM1Break,LOW);
-             digitalWrite(GM1Dir,HIGH);
+    if(ps.Button(PSB_R1))                                      //Increase bldc speed by 10.
+    {
+      Serial.println("R1 PRESSED");
+      bldcSpeed+=5;
+      bldc.writeMicroseconds(bldcSpeed);
+      Serial.println(bldcSpeed);
+      delay(10);
+    }
+    else if(ps.Button(PSB_R2))                                 //Decrease bldc speed by 10.
+    {
+      Serial.println("R2 PRESSED");
+      bldcSpeed-=5;
+      bldc.writeMicroseconds(bldcSpeed);
+      Serial.println(bldcSpeed);
+      delay(10);  
+    }
+    if(ps.Button(PSB_L1))                                      //Gimbal up.
+    {
+      Serial.println("L1 pressed Gimbal up");
+      digitalWrite(GM1Break,LOW);
+      digitalWrite(GM1Dir,HIGH);
                 
-             digitalWrite(GM2Break,LOW);
-             digitalWrite(GM2Dir,HIGH);
+      digitalWrite(GM2Break,LOW);
+      digitalWrite(GM2Dir,HIGH);
              
-             analogWrite(GM1pwm,250);
-             analogWrite(GM2pwm,80);
-             delay(10);
-       }
-       else if(ps.Button(PSB_L2))                                 //Gimble Down.
-       {
-             Serial.println("L1 pressed Gimble Down");
-             digitalWrite(GM1Break,LOW);
-             digitalWrite(GM1Dir,LOW);
+      analogWrite(GM1pwm,250);
+      analogWrite(GM2pwm,80);
+      delay(10);
+    }
+    else if(ps.Button(PSB_L2))                                 //Gimbal Down.
+    {
+      Serial.println("L1 pressed Gimbal Down");
+      digitalWrite(GM1Break,LOW);
+      digitalWrite(GM1Dir,LOW);
                 
-             digitalWrite(GM2Break,LOW);
-             digitalWrite(GM2Dir,LOW);
+      digitalWrite(GM2Break,LOW);
+      digitalWrite(GM2Dir,LOW);
       
-             analogWrite(GM2pwm,250);
-             analogWrite(GM1pwm,80);
-             delay(10);  
-       }
-       if(ps.Button(PSB_PAD_RIGHT))                               //Gimble Servo Rotates towards 180.
-       {
-        gServoAngle+=1;
-        gServoAngle= gServoAngle>180?180:gServoAngle;
-        GServo.attach(GSpin);
-        GServo.write(gServoAngle);
-        Serial.println(gServoAngle);
-        delay(10);
-       }
-       else if(ps.Button(PSB_PAD_LEFT))                           //Gimble Servo Rotates towards 0.
-       {
-        gServoAngle-=1;
-        gServoAngle= gServoAngle<0?0:gServoAngle;
-        GServo.attach(GSpin);
-        GServo.write(gServoAngle);
-        Serial.println(gServoAngle);
-        delay(10);
-       }
-       if(ps.Analog(PSS_LY)==255)       //Left Wheels Forward
-       {
-         digitalWrite(locoleftBreak,LOW);
-         digitalWrite(locoleftDir,LOW);
-         analogWrite(locoleftpwm,100);
-         Serial.println("Left Wheels Forward");
-         delay(15);
-         
-       }
-       else if(ps.Analog(PSS_LY)==0)    //Left Wheels Backward
-       {
-         digitalWrite(locoleftBreak,LOW);
-         digitalWrite(locoleftDir,HIGH);
-         analogWrite(locoleftpwm,100);
-         Serial.println("Left Wheels Backward");
-         delay(15);
-       }
-       if(ps.Analog(PSS_RY)==255)       //Right Wheels Forward
-       {
-         digitalWrite(locorightBreak,LOW);
-         digitalWrite(locorightDir,HIGH);
-         analogWrite(locorightpwm,100);
-         Serial.println("Right Wheels Forward");
-         delay(15);
-         
-       }
-       else if(ps.Analog(PSS_RY)==0)    //Right Wheels Backward
-       {
-         digitalWrite(locorightBreak,LOW);
-         digitalWrite(locorightDir,LOW);
-         analogWrite(locorightpwm,100);
-         Serial.println("Right Wheels Backward");
-         delay(15);
-       }
-       if(ps.Analog(PSS_LX)==255)       //Left Wheels Forward
-       {
-         digitalWrite(locoleftBreak,LOW);
-         digitalWrite(locoleftDir,HIGH);
-         analogWrite(locoleftpwm,200);
-         Serial.println("Left Wheels Forward");
-         delay(15);
-         
-       }
-       else if(ps.Analog(PSS_LX)==0)    //Left Wheels Backward
-       {
-         digitalWrite(locoleftBreak,LOW);
-         digitalWrite(locoleftDir,HIGH);
-         analogWrite(locoleftpwm,50);
-         Serial.println("Left Wheels Backward");
-         delay(15);
-       }
-       if(ps.Analog(PSS_RX)==255)       //Right Wheels Forward
-       {
-         digitalWrite(locorightBreak,LOW);
-         digitalWrite(locorightDir,LOW);
-         analogWrite(locorightpwm,50);
-         Serial.println("Right Wheels Forward");
-         delay(15);
-         
-       }
-       else if(ps.Analog(PSS_RX)==0)    //Right Wheels Backward
-       {
-         digitalWrite(locorightBreak,LOW);
-         digitalWrite(locorightDir,LOW);
-         analogWrite(locorightpwm,200);
-         Serial.println("Right Wheels Backward");
-         delay(15);
-       }
+      analogWrite(GM2pwm,250);
+      analogWrite(GM1pwm,80);
+      delay(10);  
+    }
+    if(ps.Button(PSB_PAD_RIGHT))                               //Gimbal Servo Rotates towards 180.
+    {
+      gServoAngle+=1;
+      gServoAngle= gServoAngle>180?180:gServoAngle;
+      GServo.attach(GSpin);
+      GServo.write(gServoAngle);
+      Serial.println(gServoAngle);
+      delay(10);
+    }
+    else if(ps.Button(PSB_PAD_LEFT))                           //Gimbal Servo Rotates towards 0.
+    {
+      gServoAngle-=1;
+      gServoAngle= gServoAngle<0?0:gServoAngle;
+      GServo.attach(GSpin);
+      GServo.write(gServoAngle);
+      Serial.println(gServoAngle);
+      delay(10);
+    }
+    if(ps.Analog(PSS_LY)==255)       //Left Wheels Forward
+    {
+      digitalWrite(locoleftBreak,LOW);
+      digitalWrite(locoleftDir,LOW);
+      analogWrite(locoleftpwm,100);
+      Serial.println("Left Wheels Forward");
+      delay(15);   
+    }
+    else if(ps.Analog(PSS_LY)==0)    //Left Wheels Backward
+    {
+      digitalWrite(locoleftBreak,LOW);
+      digitalWrite(locoleftDir,HIGH);
+      analogWrite(locoleftpwm,100);
+      Serial.println("Left Wheels Backward");
+      delay(15);
+    }
+    if(ps.Analog(PSS_RY)==255)       //Right Wheels Forward
+    {
+      digitalWrite(locorightBreak,LOW);
+      digitalWrite(locorightDir,HIGH);
+      analogWrite(locorightpwm,100);
+      Serial.println("Right Wheels Forward");
+      delay(15);         
+    }
+    else if(ps.Analog(PSS_RY)==0)    //Right Wheels Backward
+    {
+      digitalWrite(locorightBreak,LOW);
+      digitalWrite(locorightDir,LOW);
+      analogWrite(locorightpwm,100);
+      Serial.println("Right Wheels Backward");
+      delay(15);
+    }
+    if(ps.Analog(PSS_LX)==255)       //Left Wheels Forward
+    {
+      digitalWrite(locoleftBreak,LOW);
+      digitalWrite(locoleftDir,HIGH);
+      analogWrite(locoleftpwm,200);
+      Serial.println("Left Wheels Forward");
+      delay(15);         
+    }
+    else if(ps.Analog(PSS_LX)==0)    //Left Wheels Backward
+    {
+      digitalWrite(locoleftBreak,LOW);
+      digitalWrite(locoleftDir,HIGH);
+      analogWrite(locoleftpwm,50);
+      Serial.println("Left Wheels Backward");
+      delay(15);
+    }
+    if(ps.Analog(PSS_RX)==255)       //Right Wheels Forward
+    {
+      digitalWrite(locorightBreak,LOW);
+      digitalWrite(locorightDir,LOW);
+      analogWrite(locorightpwm,50);
+      Serial.println("Right Wheels Forward");
+      delay(15);         
+    }
+    else if(ps.Analog(PSS_RX)==0)    //Right Wheels Backward
+    {
+      digitalWrite(locorightBreak,LOW);
+      digitalWrite(locorightDir,LOW);
+      analogWrite(locorightpwm,200);
+      Serial.println("Right Wheels Backward");
+      delay(15);
+    }
        
-       if(ps.Button(PSB_CROSS)){
-        bldcSpeed=900;
-        bldc.writeMicroseconds(bldcSpeed);
-        Serial.println(bldcSpeed);
-       }
+    if(ps.Button(PSB_CROSS))
+    {
+      bldcSpeed=900;
+      bldc.writeMicroseconds(bldcSpeed);
+      Serial.println(bldcSpeed);
+    }
 
-       if(ps.Button(PSB_SELECT)&&ps.Button(PSB_R1)){
-        
-          mode=1;
-        
-       }
-
+    if(ps.Button(PSB_SELECT)&&ps.Button(PSB_R1))
+    {
+      mode=1;
+    }
   }
-  else if(mode==1){
+  else if(mode==1)
+  {
     Serial.println("inside mode1");
-      if(ps.Button(PSB_START)){
-        mode=0;
-      }
-      if(ps.Button(PSB_L2)){
-        ArmServo[0].attach(ABS);
-        armBaseAngle-=1;
-        ArmServo[0].write(armBaseAngle);
-        delay(15);
-      }
-      else if(ps.Button(PSB_R2)){
-        ArmServo[0].attach(ABS);
-        armBaseAngle+=1;
-        ArmServo[0].write(armBaseAngle);
-        delay(15);
-      }
+    if(ps.Button(PSB_START))
+    {
+      mode=0;
+    }
+    if(ps.Button(PSB_L2))
+    {
+      ArmServo[0].attach(ABS);
+      armBaseAngle-=1;
+      ArmServo[0].write(armBaseAngle);
+      delay(15);
+    }
+    else if(ps.Button(PSB_R2))
+    {
+      ArmServo[0].attach(ABS);
+      armBaseAngle+=1;
+      ArmServo[0].write(armBaseAngle);
+      delay(15);
+    }
 
-      if(ps.Button(PSB_L1)){
-        ArmServo[1].attach(ADSS);
-        armDualAngle-=1;
-        ArmServo[1].write(armDualAngle);
-        delay(15);
-      }
-      else if(ps.Button(PSB_R2)){
-        ArmServo[1].attach(ADSS);
-        armDualAngle+=1;
-        ArmServo[1].write(armDualAngle);
-        delay(15);
-      }
+    if(ps.Button(PSB_L1))
+    {
+      ArmServo[1].attach(ADSS);      
+      armDualAngle-=1;
+      ArmServo[1].write(armDualAngle);
+      delay(15);
+    }
+    else if(ps.Button(PSB_R2))
+    {
+      ArmServo[1].attach(ADSS);
+      armDualAngle+=1;
+      ArmServo[1].write(armDualAngle);
+      delay(15);
+    }
 
-      if(ps.Button(PSB_PAD_LEFT)){
-        ArmServo[2].attach(AGRS);
-        armGripperAngle-=1;
-        ArmServo[2].write(armGripperAngle);
-        delay(15);
-      }
-      else if(ps.Button(PSB_PAD_RIGHT)){
-        ArmServo[2].attach(AGRS);
-        armGripperAngle+=1;
-        ArmServo[2].write(armGripperAngle);
-        delay(15);
-      }
+    if(ps.Button(PSB_PAD_LEFT))
+    {
+      ArmServo[2].attach(AGRS);
+      armGripperAngle-=1;
+      ArmServo[2].write(armGripperAngle);
+      delay(15);
+    }
+    else if(ps.Button(PSB_PAD_RIGHT))
+    {
+      ArmServo[2].attach(AGRS);
+      armGripperAngle+=1;
+      ArmServo[2].write(armGripperAngle);
+      delay(15);
+    }
 
-      if(ps.Button(PSB_TRIANGLE)){
-        ArmServo[3].attach(AGGS);
-        armGrippingAngle-=1;
-        ArmServo[3].write(armGrippingAngle);
-        delay(15);
-      }
-      else if(ps.Button(PSB_CROSS)){
-        ArmServo[3].attach(AGGS);
-        armGrippingAngle+=1;
-        ArmServo[3].write(armGrippingAngle);
-        delay(15);
-      }
+    if(ps.Button(PSB_TRIANGLE))
+    {
+      ArmServo[3].attach(AGGS);
+      armGrippingAngle-=1;
+      ArmServo[3].write(armGrippingAngle);
+      delay(15);
+    }
+    else if(ps.Button(PSB_CROSS))
+    {
+      ArmServo[3].attach(AGGS);
+      armGrippingAngle+=1;
+      ArmServo[3].write(armGrippingAngle);
+      delay(15);
+    }
 
-      if(ps.Button(PSB_SQUARE)){
-        digitalWrite(AMBreak,LOW);
-        digitalWrite(AMDir,LOW);
-        analogWrite(AMpwm,armVal);
-        delay(15);
-      }
-      else if(ps.Button(PSB_CIRCLE)){
-        digitalWrite(AMBreak,LOW);
-        digitalWrite(AMDir,HIGH);
-        analogWrite(AMpwm,armVal);
-        delay(15);
-      }
+    if(ps.Button(PSB_SQUARE))
+    {
+      digitalWrite(AMBreak,LOW);
+      digitalWrite(AMDir,LOW);
+      analogWrite(AMpwm,armVal);
+      delay(15);
+    }
+    else if(ps.Button(PSB_CIRCLE))
+    {
+      digitalWrite(AMBreak,LOW);
+      digitalWrite(AMDir,HIGH);
+      analogWrite(AMpwm,armVal);
+      delay(15);
+    }
   }
-
 }
