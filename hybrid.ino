@@ -348,4 +348,34 @@ void loop()
       delay(15);
     }
   }
+  else if(mode == 2)
+  {
+    RawValue =  analog Read(analogIn);    //gets you mV
+    Voltage = (RawValue/1024.0) * 5000;
+    Amps = ((Voltage - ACSoffset)/mVperAmp);
+
+    Serial.print("Raw Value = ");         //shows pre-scaled value
+    Serial.print(RawValue);               
+    Serial.print("\t mV = ");             //Shows voltage measured
+    Serial.print(Voltage,3);          
+    Serial.print("Amp = ");               //Shows current measured
+    Serial.print(Amps,3);          
+    delay(2500);
+
+    if (RawValue<200)
+    {
+      digitalWrite(clampingDir, HIGH);
+      analogWrite(clampingpwm, 200);
+    }
+    else if(RawValue>200)
+    {
+      digitalWrite(climberDir, LOW);
+      analogWrite(climberpwm, 200);
+    }
+
+    COUNT++;
+    Serial.print(COUNT);
+    if(COUNT>60)
+      mode=0;
+  }
 }
